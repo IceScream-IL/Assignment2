@@ -4,25 +4,23 @@ import java.util.Random;
 
 public class StockTraders implements Runnable {
 
-	private String name;
-	private StockServer server;
-	private Random random;
+	private final String name;
+	private final StockServer server;
+	private final Random random= new Random();;
+	StockServer.Stock one;
 
-	public StockTraders(String name, StockServer server) {
+	public StockTraders(String name, StockServer server, StockServer.Stock one ) {
 		this.name = name;
 		this.server = server;
-		this.random = new Random();
+		this.one = one;
 	}
 
 	public void run() {
 		for (int i = 0; i < 10; i++) {
 			try {
-				StockServer.Stock[] stocks = StockServer.Stock.values();
-				StockServer.Stock randomStock = stocks[random.nextInt(stocks.length)];
+				int price = server.GetStock(one);
 
-				int price = server.GetStock(randomStock);
-
-				System.out.println("Name: " + name + ", " + randomStock + " Stock: " + price + " USD");
+				System.out.println("Name: " + name + ", " + one + " Stock: " + price + " USD");
 
 				Thread.sleep((random.nextInt(3) + 1) * 1000);
 
