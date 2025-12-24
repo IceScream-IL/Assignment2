@@ -1,17 +1,16 @@
 package Race;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Track {
 
-	private int finishedRacers = 1;
-	
-	public Track() {
-	}
-	
-	public int getFinishedRacers() {
-		return this.finishedRacers;
-	}
-	
-	public void setFinishedRacers(int finishedRacers) {
-		this.finishedRacers = finishedRacers;
-	}
+    private final AtomicInteger finishedRacers = new AtomicInteger(0);
+
+    public int racerFinished() {
+        return finishedRacers.incrementAndGet();
+    }
+
+    public int getFinishedRacers() {
+        return finishedRacers.get();
+    }
 }

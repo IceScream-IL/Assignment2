@@ -1,34 +1,24 @@
 package stocks;
 
-import java.util.Random;
+public class StockUpdateThread extends Thread {
 
-import stocks.StockServer.Stock;
+    private final StockServer server;
 
-public class StockUpdateThread implements Runnable {
-	
-	private final StockServer server;
-	private final Random random = new Random();
-	
-	public StockUpdateThread(StockServer server) {
-		this.server = server;
-	}
-	
-	public void run() {
-		for (int i = 0; i < 10; i++) {
-			try {
+    public StockUpdateThread(StockServer server) {
+        this.server = server;
+    }
 
-				server.UpdateStock(Stock.APPLE, random.nextInt(100,501));
-				server.UpdateStock(Stock.MICROSOFT, random.nextInt(100,501));
-				server.UpdateStock(Stock.GOOGLE, random.nextInt(100,501));
-
-				Thread.sleep(1000);
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-	}
-
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            server.UpdateStock(StockServer.Stock.MICROSOFT, 0);
+            server.UpdateStock(StockServer.Stock.APPLE, 0);
+            server.UpdateStock(StockServer.Stock.GOOGLE, 0);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+    }
 }

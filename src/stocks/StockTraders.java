@@ -1,34 +1,42 @@
 package stocks;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class StockTraders implements Runnable {
+public class StockTraders extends Thread {
 
-	private final String name;
-	private final StockServer server;
-	private final Random random= new Random();;
-	StockServer.Stock one;
+    private final String personName;
+    private final StockServer server;
+    private final StockServer.Stock stock;
 
-	public StockTraders(String name, StockServer server, StockServer.Stock one ) {
-		this.name = name;
-		this.server = server;
-		this.one = one;
-	}
+    public StockTraders(String personName, StockServer server, StockServer.Stock stock) {
+        this.personName = personName;
+        this.server = server;
+        this.stock = stock;
+    }
 
-	public void run() {
-		for (int i = 0; i < 10; i++) {
-			try {
-				int price = server.GetStock(one);
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            int value = server.GetStock(stock);
+            System.out.println("Name: " + personName + ", " + stockName(stock) + " Stock: " + value + " USD");
+            try {
+                Thread.sleep(ThreadLocalRandom.current().nextInt(1000, 3001));
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+    }
 
-				System.out.println("Name: " + name + ", " + one + " Stock: " + price + " USD");
-
-				Thread.sleep((random.nextInt(3) + 1) * 1000);
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-	}
+    private String stockName(StockServer.Stock s) {
+        switch (s) {
+            case MICROSOFT:
+                return "Microsoft";
+            case APPLE:
+                return "Apple";
+            case GOOGLE:
+                return "Google";
+            default:
+                return s.name();
+        }
+    }
 }

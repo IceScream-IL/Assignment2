@@ -1,50 +1,57 @@
 package Race;
 
 public class Racer implements Runnable {
-	private static int globalId = 1;
-	private final int id;
-	private final int speed;
-	private final Track track;
 
-	public Racer(int speed, Track track) {
-		if (speed < 1 || speed > 10) {
-			throw new IllegalArgumentException("Speed must be between 1 and 10");
-		}
+    private static int globalId = 1;
 
-		this.id = globalId++;
-		this.speed = speed;
-		this.track = track;
-	}
+    private final int id;
+    private final int speed;
+    private final Track track;
 
-	public void go() {
-	    Thread.currentThread().setPriority(speed);
+    public Racer(int speed, Track track) {
+        if (speed < 1 || speed > 10) {
+            System.out.println("Error: speed must be between 1 and 10");
+            this.speed = 1;
+        } else {
+            this.speed = speed;
+        }
+        this.track = track;
+        this.id = nextId();
+    }
 
-	    for (int i = 1; i <= 100; i++) {
-	        System.out.println("Runner " + id + " ran " + i + " meters");
+    private static synchronized int nextId() {
+        return globalId++;
+    }
 
-	        if (i == 100) {
-	            synchronized (track) { // כל הקטע של המקום נעול על אותו Track
-	                int place = track.getFinishedRacers();
+    public void go() {
+        Thread.currentThread().setPriority(speed);
+        for (int meter = 1; meter <= 100; meter++) {
+            System.out.println("Runner " + id + " ran " + meter + " meters");
+            if (meter == 100) {
+                int place = track.racerFinished();
+                System.out.println("Runner " + id + " finished " + ordinal(place));
+            }
+        }
+    }
 
-	                if (place == 1) {
-	                    System.out.println("Runner " + id + " finished " + place + "st");
-	                } else if (place == 2) {
-	                    System.out.println("Runner " + id + " finished " + place + "nd");
-	                } else if (place == 3) {
-	                    System.out.println("Runner " + id + " finished " + place + "rd");
-	                } else {
-	                    System.out.println("Runner " + id + " finished " + place + "th");
-	                }
+    @Override
+    public void run() {
+        go();
+    }
 
-	                // מעלה את המקום לרץ הבא
-	                track.setFinishedRacers(place + 1);
-	            }
-	        }
-	    }
-	}
-
-	@Override
-	public void run() {
-		go();
-	}
+    private String ordinal(int n) {
+        if (n % 100 >= 11 && n % 100 <= 13) {
+            return n + "th";
+        }
+        switch (n % 10) {
+            case 1:
+                return n + "st";
+            case 2:
+                return n + "nd";
+            case 3:
+                return n + "rd";
+            default:
+                return n + "th";
+        }
+    }
 }
